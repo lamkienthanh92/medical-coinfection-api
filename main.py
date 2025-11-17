@@ -1,5 +1,5 @@
-
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 import joblib
@@ -8,6 +8,15 @@ import numpy as np
 import uvicorn
 
 app = FastAPI(title="Medical Co-infection Prediction API", version="1.0.0")
+
+# Add CORS middleware - ĐÂY LÀ PHẦN QUAN TRỌNG!
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Cho phép tất cả origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Cho phép tất cả HTTP methods
+    allow_headers=["*"],  # Cho phép tất cả headers
+)
 
 # Load models và metadata
 model_info = joblib.load('models/model_info.pkl')
@@ -116,7 +125,7 @@ def predict_coinfection(model_key: str, input_data: dict) -> dict:
 
 @app.get("/")
 def root():
-    return {"message": "Medical Co-infection Prediction API", "version": "1.0.0"}
+    return {"message": "Medical Co-infection Prediction API", "version": "1.0.0", "status": "running"}
 
 @app.get("/models")
 def get_models():
